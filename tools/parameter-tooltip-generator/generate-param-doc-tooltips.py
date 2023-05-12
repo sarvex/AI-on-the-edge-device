@@ -1,6 +1,7 @@
 """
 Grab all parameter files (markdown) and convert them to html files
 """
+
 import os
 import glob
 import markdown
@@ -20,7 +21,7 @@ htmlTooltipSuffix = """
 """
 
 
-folders = sorted( filter( os.path.isdir, glob.glob(parameterDocsFolder + '/*') ) )
+folders = sorted(filter(os.path.isdir, glob.glob(f'{parameterDocsFolder}/*')))
 
 
 def generateHtmlTooltip(section, parameter, markdownFile):
@@ -49,13 +50,15 @@ def generateHtmlTooltip(section, parameter, markdownFile):
     htmlTooltip = htmlTooltipPrefix + htmlTooltip + htmlTooltipSuffix
 
     # Add the tooltip to the config page
-    with open(docsMainFolder + "/" + configPage, 'r') as configPageHandle:
+    with open(f"{docsMainFolder}/{configPage}", 'r') as configPageHandle:
         configPageContent = configPageHandle.read()
 
     # print("replacing $TOOLTIP_" + section + "_" + parameter + " with the tooltip content...")
-    configPageContent = configPageContent.replace("<td>$TOOLTIP_" + section + "_" + parameter + "</td>", "<td>" + htmlTooltip + "</td>")
+    configPageContent = configPageContent.replace(
+        f"<td>$TOOLTIP_{section}_{parameter}</td>", f"<td>{htmlTooltip}</td>"
+    )
 
-    with open(docsMainFolder + "/" + configPage, 'w') as configPageHandle:
+    with open(f"{docsMainFolder}/{configPage}", 'w') as configPageHandle:
         configPageHandle.write(configPageContent)
 
 
@@ -67,9 +70,11 @@ Generate a HTML tooltip for each markdown page
 for folder in folders:
     folder = folder.split("/")[-1]
 
-    files = sorted(filter(os.path.isfile, glob.glob(parameterDocsFolder + "/" + folder + '/*')))
+    files = sorted(
+        filter(os.path.isfile, glob.glob(f"{parameterDocsFolder}/{folder}/*"))
+    )
     for file in files:
-        if not ".md" in file: # Skip non-markdown files
+        if ".md" not in file: # Skip non-markdown files
             continue
 
         parameter = file.split("/")[-1].replace(".md", "")
@@ -79,4 +84,4 @@ for folder in folders:
 """
 Copy images to main folder
 """
-os.system("cp " + parameterDocsFolder + "/img/* " + docsMainFolder + "/")
+os.system(f"cp {parameterDocsFolder}/img/* {docsMainFolder}/")
